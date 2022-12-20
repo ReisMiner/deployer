@@ -1,6 +1,7 @@
 package cc.ramon.Bot;
 
 import cc.ramon.Bot.Commands.ExtendedCommand;
+import cc.ramon.Bot.Commands.SetupWebhook;
 import cc.ramon.Bot.Commands.TestEmbed;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -14,6 +15,7 @@ public class CommandManager {
         commands = new ArrayList<>();
 
         commands.add(new TestEmbed());
+        commands.add(new SetupWebhook());
     }
 
     private final List<ExtendedCommand> commands;
