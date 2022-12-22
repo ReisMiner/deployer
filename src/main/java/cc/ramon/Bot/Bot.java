@@ -1,6 +1,7 @@
 package cc.ramon.Bot;
 
 import cc.ramon.FileIO.Parser;
+import cc.ramon.FileIO.StructureManager;
 import cc.ramon.Main;
 import cc.ramon.Model.Webhook;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -27,7 +28,7 @@ public class Bot extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent event) {
-        event.getJDA().getPresence().setPresence(Activity.watching("Github"), true);
+        event.getJDA().getPresence().setPresence(Activity.watching("GitHub"), true);
 
         commandManager.updateCommands(event.getJDA(), Long.valueOf(dotenv.get("GUILD")));
     }
