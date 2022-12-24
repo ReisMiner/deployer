@@ -1,9 +1,12 @@
 package cc.ramon.FileIO;
 
 import cc.ramon.Model.FileData;
+import cc.ramon.Model.JobConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StructureManager {
 
@@ -39,10 +42,12 @@ public class StructureManager {
      * @return true if structure was created. if not false
      */
     public boolean makeStructure() {
+        JobConfig jobConfig = new JobConfig("", "");
+        FileData data = new FileData(new ArrayList<>(List.of(jobConfig)));
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(storageFile, new FileData(""));
+            mapper.writeValue(storageFile, data);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
