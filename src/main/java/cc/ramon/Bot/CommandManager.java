@@ -1,10 +1,14 @@
 package cc.ramon.Bot;
 
 import cc.ramon.Bot.Commands.ExtendedCommand;
+import cc.ramon.Bot.Commands.PrintFileData;
 import cc.ramon.Bot.Commands.SetupWebhook;
 import cc.ramon.Bot.Commands.TestEmbed;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +20,28 @@ public class CommandManager {
 
         commands.add(new TestEmbed());
         commands.add(new SetupWebhook());
+        commands.add(new PrintFileData());
     }
 
     private final List<ExtendedCommand> commands;
 
-    public void executeCommand(SlashCommandInteractionEvent event) {
-        event.deferReply();
+    public void executeCommand(GenericCommandInteractionEvent event) {
         String name = event.getName();
         for (ExtendedCommand command : commands) {
             if (command.getName().equals(name)) {
-                command.run(event);
+                if (event instanceof SlashCommandInteractionEvent) {
+                    SlashCommandInteractionEvent e = (SlashCommandInteractionEvent) event;
+                    e.deferReply();
+                    command.run(e);
+                } else if (event instanceof MessageContextInteractionEvent) {
+                    MessageContextInteractionEvent e = (MessageContextInteractionEvent) event;
+                    e.deferReply();
+                    command.run(e);
+                } else if (event instanceof UserContextInteractionEvent) {
+                    UserContextInteractionEvent e = (UserContextInteractionEvent) event;
+                    e.deferReply();
+                    command.run(e);
+                }
                 break;
             }
         }

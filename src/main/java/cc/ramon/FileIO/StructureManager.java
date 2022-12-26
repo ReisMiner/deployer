@@ -5,16 +5,25 @@ import cc.ramon.Model.JobConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StructureManager {
 
-    private final String filePath = "bot_data.json";
     private final File storageFile;
+    private static StructureManager instance = null;
+    public FileData fileData = null;
 
-    public StructureManager() {
+    private StructureManager() {
+        String filePath = "bot_data.json";
         storageFile = new File(filePath);
+    }
+
+    public static StructureManager getInstance() {
+        if (instance == null)
+            instance = new StructureManager();
+        return instance;
     }
 
     /**
@@ -28,8 +37,11 @@ public class StructureManager {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(storageFile, FileData.class);
+            fileData = mapper.readValue(storageFile, FileData.class);
+            return fileData;
         } catch (Exception ex) {
+            System.out.println("Error while reading the file");
+            ex.printStackTrace();
             return null;
         }
 
@@ -42,13 +54,14 @@ public class StructureManager {
      * @return true if structure was created. if not false
      */
     public boolean makeStructure() {
-        JobConfig jobConfig = new JobConfig("", "");
-        FileData data = new FileData(new ArrayList<>(List.of(jobConfig)));
-
+        JobConfig jobConfig = new JobConfig(null, null, null);
+        FileData data = new FileData(-1, new ArrayList<>(List.of(jobConfig)));
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(storageFile, data);
+            fileData = data;
         } catch (Exception e) {
+            System.out.println("Error while creating the file");
             e.printStackTrace();
             return false;
         }
@@ -61,9 +74,8 @@ public class StructureManager {
      * Checks file structure and makes it if not there yet.
      */
     public FileData setup() {
-        FileData data = checkStructure();
-        if (data != null)
-            return data;
+        if (checkStructure() != null)
+            return fileData;
 
         if (makeStructure()) {
             return checkStructure();
@@ -71,6 +83,15 @@ public class StructureManager {
             System.out.println("StorageFile Could not be created!");
             return null;
         }
+    }
 
+    public void update(FileData data) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(storageFile, data);
+            fileData = data;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
