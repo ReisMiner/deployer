@@ -10,16 +10,21 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Bot extends ListenerAdapter {
 
@@ -85,6 +90,17 @@ public class Bot extends ListenerAdapter {
                 event.reply("Added new Job Config").queue();
             else
                 event.reply("Error while adding new Job Config").queue();
+        }
+    }
+
+    @Override
+    public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
+        if (event.getName().equals("delete-job") && event.getFocusedOption().getName().equals("job")) {
+            List<Command.Choice> options = structureManager.fileData.getJobConfigs().stream()
+                    .filter(job -> job.getJobName().startsWith(event.getFocusedOption().getValue()))
+                    .map(job -> new Command.Choice(job.getJobName(), job.getJobName()))
+                    .collect(Collectors.toList());
+            event.replyChoices(options).queue();
         }
     }
 }

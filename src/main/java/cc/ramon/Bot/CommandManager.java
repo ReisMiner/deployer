@@ -20,6 +20,7 @@ public class CommandManager {
         commands.add(new PrintFileData());
         commands.add(new AddJobConfig());
         commands.add(new ListJobConfig());
+        commands.add(new DeleteJobConfig());
     }
 
     private final List<ExtendedCommand> commands;
