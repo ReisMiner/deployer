@@ -2,7 +2,6 @@ package cc.ramon.Bot.Commands;
 
 import cc.ramon.FileIO.Parser;
 import cc.ramon.FileIO.StructureManager;
-import cc.ramon.Model.FileData;
 import cc.ramon.Model.Webhook;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
@@ -14,8 +13,8 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 
-public class SetupJobConfig extends ExtendedCommand {
-    public SetupJobConfig() {
+public class AddJobConfig extends ExtendedCommand {
+    public AddJobConfig() {
         super(Command.Type.MESSAGE, "add repo and job to config");
         this.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_WEBHOOKS));
     }
@@ -60,6 +59,5 @@ public class SetupJobConfig extends ExtendedCommand {
                 .addActionRows(ActionRow.of(repoInput), ActionRow.of(jobInput), ActionRow.of(commandInput)).build();
 
         event.replyModal(modal).queue();
-
     }
 }

@@ -18,7 +18,8 @@ public class CommandManager {
         commands.add(new TestEmbed());
         commands.add(new SetupWebhook());
         commands.add(new PrintFileData());
-        commands.add(new SetupJobConfig());
+        commands.add(new AddJobConfig());
+        commands.add(new ListJobConfig());
     }
 
     private final List<ExtendedCommand> commands;
