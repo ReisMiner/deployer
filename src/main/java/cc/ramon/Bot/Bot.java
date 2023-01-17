@@ -1,5 +1,6 @@
 package cc.ramon.Bot;
 
+import cc.ramon.FileIO.CommandRunner;
 import cc.ramon.FileIO.Parser;
 import cc.ramon.FileIO.StructureManager;
 import cc.ramon.Main;
@@ -19,6 +20,8 @@ import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -50,13 +53,17 @@ public class Bot extends ListenerAdapter {
         if (msg.getEmbeds().size() == 0) {
             return;
         }
-        if (msg.getAuthor().getIdLong() != structureManager.fileData.getWebhookId() ||
-                msg.getAuthor().getIdLong() != event.getJDA().getSelfUser().getIdLong())
-            return;
-
         Webhook webhook = Parser.ParseWebhook(msg.getEmbeds().get(0));
 
-        System.out.println(webhook);
+        if (webhook.isSuccess()) {
+            for (JobConfig jobConfig : structureManager.fileData.getJobConfigs()) {
+                if (jobConfig.getJobName().equals(webhook.jobName()) && jobConfig.getRepoName().equals(webhook.repoName())) {
+                    CommandRunner.runCommand(jobConfig.getRunCommand());
+                    event.getMessage().reply("Running Command: " + jobConfig.getRunCommand()).queue();
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -81,7 +88,7 @@ public class Bot extends ListenerAdapter {
             String job = event.getValue("job").getAsString();
             String command = event.getValue("command").getAsString();
 
-            if (structureManager.fileData.getJobConfigs().get(0).getRepoName() == null)
+            if (structureManager.fileData.getJobConfigs().size() > 0 && structureManager.fileData.getJobConfigs().get(0).getRepoName() == null)
                 structureManager.fileData.getJobConfigs().set(0, new JobConfig(repo, job, command));
             else
                 structureManager.fileData.getJobConfigs().add(new JobConfig(repo, job, command));
