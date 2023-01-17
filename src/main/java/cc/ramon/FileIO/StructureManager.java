@@ -85,13 +85,26 @@ public class StructureManager {
         }
     }
 
-    public void update(FileData data) {
+    public boolean update(FileData data) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(storageFile, data);
             fileData = data;
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean update() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(storageFile, this.fileData);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

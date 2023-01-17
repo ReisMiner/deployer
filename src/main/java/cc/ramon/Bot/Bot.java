@@ -3,13 +3,16 @@ package cc.ramon.Bot;
 import cc.ramon.FileIO.Parser;
 import cc.ramon.FileIO.StructureManager;
 import cc.ramon.Main;
+import cc.ramon.Model.JobConfig;
 import cc.ramon.Model.Webhook;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -22,6 +25,7 @@ public class Bot extends ListenerAdapter {
 
     private final CommandManager commandManager = new CommandManager();
     private final Dotenv dotenv;
+    private final StructureManager structureManager = StructureManager.getInstance();
 
     public Bot(Dotenv dotenv) {
         this.dotenv = dotenv;
@@ -41,7 +45,8 @@ public class Bot extends ListenerAdapter {
         if (msg.getEmbeds().size() == 0) {
             return;
         }
-        if (!msg.getAuthor().isBot())
+        if (msg.getAuthor().getIdLong() != structureManager.fileData.getWebhookId() ||
+                msg.getAuthor().getIdLong() != event.getJDA().getSelfUser().getIdLong())
             return;
 
         Webhook webhook = Parser.ParseWebhook(msg.getEmbeds().get(0));
@@ -57,5 +62,29 @@ public class Bot extends ListenerAdapter {
     @Override
     public void onMessageContextInteraction(MessageContextInteractionEvent event) {
         commandManager.executeCommand(event);
+    }
+
+    @Override
+    public void onUserContextInteraction(UserContextInteractionEvent event) {
+        commandManager.executeCommand(event);
+    }
+
+    @Override
+    public void onModalInteraction(ModalInteractionEvent event) {
+        if (event.getModalId().equals("newJobConfig")) {
+            String repo = event.getValue("repo").getAsString();
+            String job = event.getValue("job").getAsString();
+            String command = event.getValue("command").getAsString();
+
+            if (structureManager.fileData.getJobConfigs().get(0).getRepoName() == null)
+                structureManager.fileData.getJobConfigs().set(0, new JobConfig(repo, job, command));
+            else
+                structureManager.fileData.getJobConfigs().add(new JobConfig(repo, job, command));
+
+            if (structureManager.update())
+                event.reply("Added new Job Config").queue();
+            else
+                event.reply("Error while adding new Job Config").queue();
+        }
     }
 }

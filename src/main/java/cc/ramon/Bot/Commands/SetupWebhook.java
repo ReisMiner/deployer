@@ -33,7 +33,10 @@ public class SetupWebhook extends ExtendedCommand {
         }
 
         data.setWebhookId(webhook.getIdLong());
-        sm.update(data);
-        event.reply("Set Webhook Source to " + webhook.getName() + "[" + webhook.getIdLong() + "]").queue();
+        if (sm.update(data))
+            event.reply("Set Webhook Source to " + webhook.getName() + "[" + webhook.getIdLong() + "]").queue();
+        else
+            event.reply("Error while setting webhook source").queue();
+
     }
 }

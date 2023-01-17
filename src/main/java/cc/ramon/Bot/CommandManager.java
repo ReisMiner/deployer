@@ -1,9 +1,6 @@
 package cc.ramon.Bot;
 
-import cc.ramon.Bot.Commands.ExtendedCommand;
-import cc.ramon.Bot.Commands.PrintFileData;
-import cc.ramon.Bot.Commands.SetupWebhook;
-import cc.ramon.Bot.Commands.TestEmbed;
+import cc.ramon.Bot.Commands.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
@@ -21,6 +18,7 @@ public class CommandManager {
         commands.add(new TestEmbed());
         commands.add(new SetupWebhook());
         commands.add(new PrintFileData());
+        commands.add(new SetupJobConfig());
     }
 
     private final List<ExtendedCommand> commands;
